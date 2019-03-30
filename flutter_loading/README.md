@@ -36,9 +36,8 @@ lib
 	  |--loading.dart  #loading
   |--main.dart #入口 
 ```
-- 这里是新建项目，以前项目结构来介绍。
 
-#### showDialog介绍
+### showDialog介绍
 ```
 showDialog{
   @required BuildContext context,
@@ -54,12 +53,12 @@ showDialog{
 * builder：创建弹窗的组件，这些可以创建需要的交互内容
 * context：上下文，这里只要打通了，就能实现全局。这是关键
 
-> 查看showDialog源码，调用顺序是
-showDialog -> showGeneralDialog -> Navigator.of(context, rootNavigator: true).push()
-context作为参数，作用是提供给了Navigator.of(context, rootNavigator: true).push使用 
+> 查看showDialog源码，调用顺序是  
+> showDialog -> showGeneralDialog -> Navigator.of(context, rootNavigator: true).push()
+> context作为参数，作用是提供给了Navigator.of(context, rootNavigator: true).push使用 
 
 
-* 了解下showGeneralDialog的注释内容，介绍了关闭弹窗的重点
+* showGeneralDialog的注释内容，介绍了关闭弹窗的重点
 ```
 /// The dialog route created by this method is pushed to the root navigator.
 /// If the application has multiple [Navigator] objects, it may be necessary to
@@ -71,6 +70,7 @@ context作为参数，作用是提供给了Navigator.of(context, rootNavigator: 
 ///  * [showDialog], which displays a Material-style dialog.
 ///  * [showCupertinoDialog], which displays an iOS-style dialog.
 ```
+
 ### 实现简单弹窗
 - demo中floatingActionButton中_incrementCounter事件，事件触发后显示弹窗，具体内容可结合代码注解
 ```
@@ -109,10 +109,10 @@ context作为参数，作用是提供给了Navigator.of(context, rootNavigator: 
 ```
 <img src="https://raw.githubusercontent.com/efoxTeam/flutter-demo/master/flutter_loading/assets/loading.jpg" width = "260" height = "480" div align=center />
 
-* 点击后出来了弹窗了，这一切还没有结束，只是个开始。
+点击后出来了弹窗了，这一切还没有结束，只是个开始。
 关闭弹窗，点击物理返回键就后退了。（尴尬不）
-* 在上面showDialog介绍中最后提供了一段关于showGeneralDialog的注释代码，若需要关闭窗口，可以通过调用 Navigator.of(context, rootNavigator: true).pop(result)。
-* 修改下RaisedButton事件内容
+在上面showDialog介绍中最后提供了一段关于showGeneralDialog的注释代码，若需要关闭窗口，可以通过调用 Navigator.of(context, rootNavigator: true).pop(result)。
+修改下RaisedButton事件内容
 ```
 RaisedButton(
   child: Text('close dialog'),
@@ -121,9 +121,9 @@ RaisedButton(
   },
 ),
 ```
-* 窗口可以通过按钮控制关闭
+这样弹窗可以通过按钮控制关闭了
 
-#### 接入dio
+### 接入dio
 在触发接口请求时，先调用showDialog触发弹窗，接口请求完成关闭窗口
 - http/index.dart 实现get接口请求，同时增加interceptors，接入onRequest、onResponse、onError函数，伪代码如下
 ```
@@ -197,8 +197,9 @@ class Index extends StatelessWidget {
 }
 
 ```
-#### 弹窗关键点分析
-**context**
+
+### 弹窗关键点分析
+#### context
 > 解决了showDialog中的context，即能实现弹窗任意调用，不局限于dio请求。context不是任意的，只在Scaffold中能够使Navigator.of(context)中找得到Navigator对象。（刚接触时很多时候会觉得同样都是context，为啥调用of(context)会报错。）
 ```
 class MyApp extends StatelessWidget {
@@ -237,10 +238,11 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 ```
 所以全局弹窗的context，需要scaffold中的context。项目初始时在build第一次返回scaffold组件前，把context全局存储起来，提供能showDialog使用。（第一次返回没有局限，只要在调用showDiolog调用前全局保存context即可，自行而定。），至此可以解决了dio中调用showDialog时，context经常运用错误导致报错问题。
-- 扩展下context的内容，在flutter-ui中，先通过Store.connect封装[Provide](https://pub.dartlang.org/packages/provide)(https://pub.dartlang.org/packages/provide)数据层，这里的context返回的provide实例的上下文，接着return MaterialApp中，这里的上下文也是MaterialApp本身的，这些都没法找到Navigator对象，最终在界面出现前的Scaffold时，通过Provide数据管理setWidgetCtx，全局保存了context。
+- 这里是扩展分析[flutter-ui](https://github.com/efoxTeam/flutter-ui)中与[provide](https://pub.dartlang.org/packages/provide)结合使用后遇到的context。
+- flutter-ui先通过Store.connect封装provide数据层，这里的context返回的provide实例的上下文，接着return MaterialApp中，这里的上下文也是MaterialApp本身的，这些都没法使用Navigator对象，最终在build Scaffold时，通过Provide数据管理提前setWidgetCtx，全局保存Scaffold提供的context。
 
 #### 实现全局存储context
-> 1 在这里没有使用provide数据存储，有兴趣的可以[前往](https://pub.dartlang.org/packages/provide)了解。简单的在http/loading.dart文件的Loading类暂存一个context静态变量。
+> 1 在http/loading.dart文件的Loading类暂存一个context静态变量。
 ```
 class Loading {
   static dynamic ctx;
@@ -273,8 +275,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 ```
 
-#### 实现dio请求时loading
-> context关键点解决了，其它的只是角色实现了。点击按钮，调用dio.get接口拉取数据，在onRequest前调用Loading.before(); onResponse调用Loading.complete()进行关闭。
+### 实现dio请求时loading
+> 上述内容解决了context关键点。接下来实现接口交互。点击按钮，调用dio.get接口拉取数据，在onRequest前调用Loading.before(); onResponse调用Loading.complete()进行关闭。
 ```
 import 'package:flutter/material.dart';
 
@@ -344,7 +346,7 @@ class Http {
 }
 
 ```
-修改下事件，demo中将继续调用函数，发起调用(flutter-ui)[]中版本号的接口
+修改下_incrementCounter函数的内容为通过http.get触发接口调用
 ```
 import 'package:flutter/material.dart';
 import 'package:flutter_loading/http/loading.dart' show Loading;
@@ -356,10 +358,12 @@ import 'http/index.dart' show Http;
   }
 	... // 省略代码
 ```
-ok. 你将会看到如下效果。
+ok. 你将会看到如下效果。  
+
 ![Alt 预览](https://raw.githubusercontent.com/efoxTeam/flutter-demo/master/flutter_loading/assets/loading.gif)
 
-#### 并发请求时loading处理
+
+### 并发请求时loading处理
 > 并发请求，loading只需要保证有一个在当前运行。接口返回结束，只需要保证最后一个完成时，关闭loading。
 - 使用Set有排重作用，比较使用用来管理并发请求地址。通过Set.length控制弹窗与关闭窗口。
 - 增加LoadingStatus判断是否已经有弹窗存在
@@ -408,3 +412,5 @@ onReuest: Loading.before(options.uri, '正在加速中...');
 onReponse: Loading.complete(resp.request.uri);
 onError: Loading.complete(error.request.uri );
 ```
+
+欢迎大家交流~
