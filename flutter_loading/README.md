@@ -238,24 +238,24 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 ```
 所以全局弹窗的context，需要scaffold中的context。项目初始时在build第一次返回scaffold组件前，把context全局存储起来，提供能showDialog使用。（第一次返回没有局限，只要在调用showDiolog调用前全局保存context即可，自行而定。），至此可以解决了dio中调用showDialog时，context经常运用错误导致报错问题。
-- 这里是扩展分析[flutter-ui](https://github.com/efoxTeam/flutter-ui)中与[provide](https://pub.dartlang.org/packages/provide)结合使用后遇到的context。
-- flutter-ui先通过Store.connect封装provide数据层，这里的context返回的provide实例的上下文，接着return MaterialApp中，这里的上下文也是MaterialApp本身的，这些都没法使用Navigator对象，最终在build Scaffold时，通过Provide数据管理提前setWidgetCtx，全局保存Scaffold提供的context。
+> 扩展分析[flutter-ui](https://github.com/efoxTeam/flutter-ui)中与[provide](https://pub.dartlang.org/packages/provide)结合使用后遇到的context。
+flutter-ui先通过Store.connect封装provide数据层，这里的context返回的provide实例的上下文，接着return MaterialApp中，这里的上下文也是MaterialApp本身的，这些都没法使用Navigator对象，最终在build Scaffold时，通过Provide数据管理提前setWidgetCtx，全局保存Scaffold提供的context。
 
-#### 实现全局存储context
+### 实现全局存储context
 > 1 在http/loading.dart文件的Loading类暂存一个context静态变量。
 ```
 class Loading {
   static dynamic ctx;
   static void before(text) {
     // 请求前显示弹窗
-//    showDialog(context: ctx, builder: (context) {
-//      return Index(text:text);
-//    });
+	// showDialog(context: ctx, builder: (context) {
+	//   return Index(text:text);
+	// );
   }
 
   static void complete() {
     // 完成后关闭loading窗口
-//    Navigator.of(ctx, rootNavigator: true).pop();
+	// Navigator.of(ctx, rootNavigator: true).pop();
   }
 }
 ```
