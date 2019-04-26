@@ -10,10 +10,9 @@
 * [provide](https://pub.dartlang.org/packages/provide)
 * [scoped_model](https://pub.dartlang.org/flutter/packages?q=scoped_model)
 
-#### 基本使用provide
-* 初始化
+#### 初始化
 ```
-///
+/// UserModel
 class UserModel with ChangeNotifier {
 	String name = 'Wanwu';
 	setAge(val) {
@@ -50,7 +49,7 @@ init({child, dispose = true}) {
 /// main
 void main() => runApp(init(child: MainApp()));
 ```
-* 分析ProvideMulti
+#### 分析ProvideMulti
 ```
 ProvideMulti(
    builder: builder,
@@ -63,7 +62,7 @@ builder:  （context, child, model）返回context, child, ProvidedValues值，P
 requestedValues： []数组类型，即传入数据模型对应的namespace，需要使用哪个就传入哪个。[UserModel, ConfigModel]
 child: 传入组件，在build中返回
 
-* 使用
+#### 使用
 ```
 ProvideMulti(
 	builder:(context, child, model) {
@@ -78,6 +77,5 @@ ProvideMulti(
 )
 ```
 
-可在项目中进行尝试与使用ProvideMulti。
-源码可参考[flutter-ui中关于flutter_provide应用](https://github.com/efoxTeam/flutter-demo/tree/master/flutter_provide)
-欢迎交流~
+* 源码可参考[flutter-ui中关于flutter_provide应用](https://github.com/efoxTeam/flutter-demo/tree/master/flutter_provide)  
+* 欢迎交流~  
