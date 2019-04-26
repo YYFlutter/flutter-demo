@@ -41,11 +41,28 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'You have pushed the button this many times:',
+              '该用例只是简单实现一个弹窗',
             ),
+            Text("具体的关键点在于使用Scaffold中的context对象"),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
+              '建议依项目特点进行完善',
+            ),
+            RaisedButton(
+              child: Text("跳转页面"),
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                  return Scaffold(
+                    body: Center(
+                      child: Text('点击按钮试下loading效果'),
+                    ),
+                    floatingActionButton: FloatingActionButton(
+                      onPressed: _incrementCounter,
+                      tooltip: 'Increment',
+                      child: Icon(Icons.add),
+                    ),
+                  );
+                }));
+              },
             ),
           ],
         ),
@@ -57,7 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-  int _counter = 0;
 
   void _incrementCounter() {
 //    Loading.before('loading...');
