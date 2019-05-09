@@ -20,6 +20,7 @@ class Http {
         },
         // 接口成功返回时处理
         onResponse: (Response resp) {
+          print('onResponse');
           // 这里为了让数据接口返回慢一点，增加了3秒的延时
           Future.delayed(Duration(seconds: 3), () {
             Loading.complete(resp.request.uri );
@@ -28,6 +29,7 @@ class Http {
         },
         // 接口报错时处理
         onError: (DioError error) {
+          print('onError');
           Loading.complete(error.request.uri );
           return error;
         },
