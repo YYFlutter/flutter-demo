@@ -1,111 +1,138 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_intl/lang/index.dart'
+  show AppLocalizations, AppLocalizationsDelegate;
+import 'package:flutter_intl/lang/config.dart' show ConfigLanguage;
 
-void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+void main () => runApp(MainApp());
+GlobalKey<_ChangeLocalizationsState> changeLocalizationsStateKey = new GlobalKey<_ChangeLocalizationsState>();
+class MainApp extends StatefulWidget {
+  @override
+  _MainAppState createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  // 定义全局 语言代理
+  AppLocalizationsDelegate _delegate;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _delegate = AppLocalizationsDelegate();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      // locale: Locale('zh', 'CH'),
+      localeResolutionCallback: (deviceLocale, supportedLocal) {
+        print('当前设备语种 deviceLocale: $deviceLocale, 支持语种 supportedLocale: $supportedLocal}');
+        // 判断传入语言是否支持
+        Locale _locale = supportedLocal.contains(deviceLocale) ? deviceLocale : Locale('zh', 'CN');
+        return _locale;
+      },
+      onGenerateTitle: (context) {
+        // 设置多语言代理
+        // AppLocalizations.setProxy(setState, _delegate);
+        return AppLocalizations.$t('title_page');
+      },
+      // localizationsDelegates 列表中的元素时生成本地化集合的工厂
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,   // 为Material Components库提供本地化的字符串和其他值
+        GlobalWidgetsLocalizations.delegate,    // 定义widget默认的文本方向，从左往右或从右往左
+        _delegate
+      ],
+      supportedLocales: ConfigLanguage.supportedLocales,
+      initialRoute: '/',
+      routes: {
+        '/': (context) => 
+        // Home()
+        Builder(builder: (context) {
+          return ChangeLocalizations(
+            key: changeLocalizationsStateKey,
+            child: Home()
+          );
+        })
+      }
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
+class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    Locale locale = Localizations.localeOf(context);
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      appBar: AppBar(title: Text('${AppLocalizations.$t('title_appbar')}'),),
+      body: ListView(
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(top: 60),
+            alignment: Alignment.center,
+            child: Text('${locale.languageCode} ${locale.toString()}'),
+          ),
+          Container(
+            alignment: Alignment.center,
+            child: Text('${AppLocalizations.$t('content.currentLanguage')}'),
+          ),
+          Wrap(
+            spacing: 8.0,
+            alignment: WrapAlignment.center,
+            children: <Widget>[
+              ActionChip(
+                backgroundColor: Theme.of(context).primaryColor,
+                onPressed: () {
+                  changeLocalizationsStateKey.currentState.changeLocale(Locale('en', 'US'));
+                },
+                label: Text('${AppLocalizations.$t('content.en')}'),
+              ),
+              ActionChip(
+                backgroundColor: Theme.of(context).primaryColor,
+                onPressed: () {
+                  changeLocalizationsStateKey.currentState.changeLocale(Locale('zh', 'CH'));
+                },
+                label: Text('${AppLocalizations.$t('content.zh')}'),
+              )
+            ],
+          )
+        ],
+      )
+    );
+  }
+}
+
+class ChangeLocalizations extends StatefulWidget {
+  final Widget child;
+  ChangeLocalizations({Key key, this.child}):super(key: key);
+  @override
+  _ChangeLocalizationsState createState() => _ChangeLocalizationsState();
+}
+
+class _ChangeLocalizationsState extends State<ChangeLocalizations> {
+  Locale _locale;
+  @override
+  void initState() {
+    super.initState();
+  }
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    // 获取当前设备的语言
+    _locale = Localizations.localeOf(context);
+    print('设备语言: $_locale');
+  }
+  changeLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Localizations.override(
+      context: context,
+      locale: _locale,
+      child: widget.child,
     );
   }
 }
