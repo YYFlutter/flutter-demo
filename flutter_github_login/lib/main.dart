@@ -88,6 +88,7 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
+    Store.value<UserModel>(context).getLocalUserInfo();
     return Store.connect<UserModel>(
       builder: (context, child, model) {
         return MaterialApp(
