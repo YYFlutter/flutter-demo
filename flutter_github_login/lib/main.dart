@@ -14,8 +14,33 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    Store.setStoreCtx(context);
+    Store.setStoreCtx(context); // 初始化数据层
   }
+
+  @override
+  Widget build(BuildContext context) {
+    Store.value<UserModel>(context).getLocalUserInfo();
+    return Store.connect<UserModel>(
+      builder: (context, child, model) {
+        return MaterialApp(
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: HomePage(),
+        );
+      }
+    );
+  }
+}
+
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
 
   // 抽屉面板
   renderDrawer() {
@@ -88,50 +113,44 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
-    Store.value<UserModel>(context).getLocalUserInfo();
+    Store.setWidgetCtx(context); // 初始化scaffold的上下文作为全局上下文，提供弹框等使用
     return Store.connect<UserModel>(
       builder: (context, child, model) {
-        return MaterialApp(
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Flutter UI 接入github登陆'),
           ),
-          home: Scaffold(
-            appBar: AppBar(
-              title: Text('Flutter UI 接入github登陆'),
-            ),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  model.showLogin ?
-                  AppLogin()
-                  :
-                  ListTile(
-                    leading: ClipOval(
-                      child: model.user.avatar_url != null
-                        ? Image.network(
-                            model.user.avatar_url,
-                            width: 80,
-                          )
-                        : Icon(Icons.account_box),
-                    ),
-                    title: Text(
-                      model.user.name ?? 'Guest',
-                      style: TextStyle(fontWeight: FontWeight.bold)
-                    ),
-                    onTap: () {
-                      // Scaffold.of(context).openDrawer()
-                      if(model.user.avatar_url == null) {
-                        model.changeShowLogin(true);
-                      }
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                model.showLogin ?
+                AppLogin()
+                :
+                ListTile(
+                  leading: ClipOval(
+                    child: model.user.avatar_url != null
+                      ? Image.network(
+                          model.user.avatar_url,
+                          width: 80,
+                        )
+                      : Icon(Icons.account_box),
+                  ),
+                  title: Text(
+                    model.user.name ?? 'Guest',
+                    style: TextStyle(fontWeight: FontWeight.bold)
+                  ),
+                  onTap: () {
+                    // Scaffold.of(context).openDrawer()
+                    if(model.user.avatar_url == null) {
+                      model.changeShowLogin(true);
                     }
-                  )
-                ],
-              ),
+                  }
+                )
+              ],
             ),
-            drawer: renderDrawer(),
           ),
+          drawer: renderDrawer(),
         );
       }
     );

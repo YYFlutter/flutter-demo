@@ -8,7 +8,7 @@ import 'package:dio/dio.dart'
         LogInterceptor,
         Response;
 import 'package:flutter_github_login/utils/localStorage.dart' show LocalStorage;
-// import 'loading.dart' as AppLoading;
+import 'loading.dart' as AppLoading;
 
 Dio getDio({options, loading}) {
   if (options == null) {
@@ -32,7 +32,7 @@ Dio getDio({options, loading}) {
       if (options.headers['Authorization'] == null && token != null) {
         options.headers['Authorization'] = 'token $token';
       }
-      // await AppLoading.beforeRequest(options.uri, loading);
+      await AppLoading.beforeRequest(options.uri, loading);
       print('=========【发送请求】Start============');
       print("请求地址 ${options.uri}");
       print("请求头 ${options.headers}");
@@ -46,13 +46,13 @@ Dio getDio({options, loading}) {
       print("请求头 ${response.statusCode}");
       print("返回值 ${response.data}");
       print('=========【请求成功】End============');
-      // await AppLoading.afterResponse(response.request.uri, loading);
+      await AppLoading.afterResponse(response.request.uri, loading);
       return response;
     },
     onError: (DioError e) async {
       print('e.request.uri=======================${e.request}');
-      // if (e.request != null && e.request.uri != null)
-        // await AppLoading.afterResponse(e.request.uri, loading);
+      if (e.request != null && e.request.uri != null)
+        await AppLoading.afterResponse(e.request.uri, loading);
       dynamic msg = e.message;
       dynamic code = 0; // 错误码
       dynamic status = e.type; // http请求状态
