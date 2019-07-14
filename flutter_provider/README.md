@@ -2,6 +2,9 @@
 provider是Google I/O 2019大会宣布的现在官方推荐的状态管理方式，
 [provider](https://pub.dev/packages/provider)，语法糖是InheritedWidget，它允许在小部件树中传递数据，允许我们更加灵活地处理数据类型和数据。
 
+## 项目地址
+[flutter_provider](https://github.com/efoxTeam/flutter-demo/tree/master/flutter_provider) 本教程的项目源码，欢迎star
+
 ## 为什么需要状态管理
 在进行项目的开发时，我们往往需要管理不同页面之间的数据共享，在页面功能复杂，状态达到几十个上百个的时候，我们会难以清楚的维护我们的数据状态，本文将以简单计数器功能使用状态管理来讲解如何在Flutter中使用provider这个状态管理框架
 
@@ -313,3 +316,5 @@ class SecondPage extends StatelessWidget {
 欢迎更多学习flutter的小伙伴加入QQ群 Flutter UI： 798874340
 
 敬请关注我们正在开发的：[efoxTeam/flutter-ui](https://github.com/efoxTeam/flutter-ui)
+
+[作者](https://github.com/DIVINER-onlys)
