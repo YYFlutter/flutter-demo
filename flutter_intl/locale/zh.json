@@ -1,0 +1,9 @@
+{
+    "title_page": "国际化例子",
+    "title_appbar": "国际化例子",
+    "content": {
+        "currentLanguage": "当前语言是中文",
+        "zh": "中文",
+        "en": "英文"
+    }
+}

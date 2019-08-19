@@ -78,4 +78,4 @@ ProvideMulti(
 ```
 
 * 源码可参考[flutter-ui中关于flutter_provide应用](https://github.com/efoxTeam/flutter-demo/tree/master/flutter_provide)
-* 欢迎交流~
+* 欢迎交流~  
